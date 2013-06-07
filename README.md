@@ -1,4 +1,4 @@
-# zip0visit
+# zip-visit
 
 A Clojure library implementing functional visitors over zippers.
 
