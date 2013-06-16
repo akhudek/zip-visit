@@ -138,7 +138,6 @@ And remember, we can mix and match any visitor functions:
 
 ```clojure
 user=> (pprint (visit root #{} [collect-spans (replace-element "name" "Mr. Smith")]))
-
 {:node
  {:tag :div,
   :attrs nil,
@@ -171,8 +170,7 @@ at a given step, it continues walking the replaced content. Consider this exampl
 ```clojure
 (def s* {:tag :span, :attrs {:id "other-name"}, :content ["Mrs. Foo"]})
 
-(defvisitor extended-greeting :pre
-  [n s]
+(defvisitor extended-greeting :pre [n s]
   (if (= "greeting" (:id (:attrs n))) {:node (update-in n [:content] conj s*)}))
 
 user=> (pprint (:node (visit root nil [extended-greeting (replace-element "other-name" "Mrs. Smith")])))
@@ -229,8 +227,8 @@ And let's use a different sort of zipper, because we can!
 ```clojure
 (def my-zip (z/vector-zip [1 2 3 [4 5 [6] 7 [8 9]]]))
 
-user=> (some-tree #(if (and (number? %) (odd? %)) %) my-zip)
-9
+user=> (some-tree #(if (and (number? %) (even? %)) %) my-zip)
+8
 ```
 
 Whoops! I bet some of you saw that coming. Some is supposed to return the first value that
@@ -242,11 +240,11 @@ find the right value. Enter *break*!
 (defn some-tree-visitor [f]
   (visitor :pre [n s] (if-let [v (f n)] {:state v :break true})))
 
-user=> (some-tree #(if (and (number? %) (odd? %)) %) my-zip)
-1
+user=> (some-tree #(if (and (number? %) (even? %)) %) my-zip)
+2
 ```
 
-When break is set, the walk stops and immediately zips back up to the root.
+When break is set the walk stops and immediately zips back up to the root.
 
 ## License
 
