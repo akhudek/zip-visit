@@ -6,6 +6,13 @@ and my own needs for walking and modifying tree data structures in clojure.
 
 ## Usage
 
+Add the dependency:
+
+```clojure
+[zip-visit "1.0.0"]
+```
+
+Require the library.
 
 ```clojure
 (require '[zip.visit :refer :all])
