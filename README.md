@@ -21,7 +21,7 @@ Zippers can operate over any tree or sequence type data. As an example, we
 will walk over XML. Let's load a short HTML example into a zipper:
 
 ```clojure
-(require '[clojure.xml :as xml] '[clojure.string :as string])
+(require '[clojure.xml :as xml])
 
 (def s "<div><span id='greeting'>Hello</span> <span id='name'>Mr. Foo</span>!</div>")
 (def root (z/xml-zip (xml/parse (java.io.ByteArrayInputStream. (.getBytes s)))))
@@ -94,9 +94,14 @@ or both are modified. To modify the tree we supply a new value for the ``:node``
 Let's try it:
 
 ```clojure
-user=> (:node (visit root nil [(replace-element "name" "Mr. Smith")]))
+user=> (pprint (:node (visit root nil [(replace-element "name" "Mr. Smith")])))
 
-{:tag :div, :attrs nil, :content [{:tag :span, :attrs {:id "greeting"}, :content ["Hello"]} "Mr. Smith" "!"]}
+{:tag :div,
+ :attrs nil,
+ :content
+ [{:tag :span, :attrs {:id "greeting"}, :content ["Hello"]}
+  "Mr. Smith"
+  "!"]}
 ```
 
 But what if we wanted to modify other parts of the tree? Do we need to
@@ -137,18 +142,121 @@ user=> (:state (visit root #{} [collect-spans]))
 And remember, we can mix and match any visitor functions:
 
 ```clojure
-user=> (visit root #{} [collect-spans (replace-element "name" "Mr. Smith")])
-{:node {:tag :div, :attrs nil, :content [{:tag :span, :attrs {:id "greeting"}, :content ["Hello"]} "Mr. Smith" "!"]}, :state #{["Mr. Foo"] ["Hello"]}}
+user=> (pprint (visit root #{} [collect-spans (replace-element "name" "Mr. Smith")]))
+
+{:node
+ {:tag :div,
+  :attrs nil,
+  :content
+  [{:tag :span, :attrs {:id "greeting"}, :content ["Hello"]}
+   "Mr. Smith"
+   "!"]},
+ :state #{["Mr. Foo"] ["Hello"]}}
 ```
 
 Just be aware of the order!
 
 ```clojure
-user=> (visit root #{} [(replace-element "name" "Mr. Smith") collect-spans])
+user=> (pprint (visit root #{} [(replace-element "name" "Mr. Smith") collect-spans]))
 
-{:node {:tag :div, :attrs nil, :content [{:tag :span, :attrs {:id "greeting"}, :content ["Hello"]} "Mr. Smith" "!"]}, :state #{["Hello"]}}
+{:node
+ {:tag :div,
+  :attrs nil,
+  :content
+  [{:tag :span, :attrs {:id "greeting"}, :content ["Hello"]}
+   "Mr. Smith"
+   "!"]},
+ :state #{["Hello"]}}
 ```
 
+### Walking Replacements and Cuts
+
+What does ``visit`` do when you replace a node? After applying all the visitor functions,
+at a given step, it continues walking the replaced content. Consider this example.
+
+```clojure
+(def s* {:tag :span, :attrs {:id "other-name"}, :content ["Mrs. Foo"]})
+
+(defvisitor extended-greeting :pre
+  [n s]
+  (if (= "greeting" (:id (:attrs n))) {:node (update-in n [:content] conj s*)}))
+
+user=> (pprint (:node (visit root nil [extended-greeting (replace-element "other-name" "Mrs. Smith")])))
+
+{:tag :div,
+ :attrs nil,
+ :content
+ [{:tag :span,
+   :attrs {:id "greeting"},
+   :content ["Hello" "Mrs. Smith"]}
+  {:tag :span, :attrs {:id "name"}, :content ["Mr. Foo"]}
+  "!"]}
+
+```
+
+Notice that ``"Mrs. Foo"`` has been resplaced with ``"Mrs. Smith"``. This happened because the walk
+continued into the replaced code. *Beware of recursive replacements!*
+
+What if you don't want this behaviour? You can disable it on a per function basis by using the a
+*cut*.
+
+```clojure
+(defvisitor extended-greeting :pre
+  [n s]
+  (if (= "greeting" (:id (:attrs n))) {:node (update-in n [:content] conj s*) :cut true}))
+
+user=> (pprint (:node (visit root nil [extended-greeting (replace-element "other-name" "Mrs. Smith")])))
+
+{:tag :div,
+ :attrs nil,
+ :content
+ [{:tag :span,
+   :attrs {:id "greeting"},
+   :content
+   ["Hello"
+    {:content ["Mrs. Foo"], :attrs {:id "other-name"}, :tag :span}]}
+  {:tag :span, :attrs {:id "name"}, :content ["Mr. Foo"]}
+  "!"]}
+```
+
+### Breaks
+
+Let's try to build a tree based version of the ``some`` function from the standard library. Recall
+that some takes a function and a collection and returns the first non-nil value of that function.
+
+```clojure
+(defn some-tree-visitor [f]
+  (visitor :pre [n s] (if-let [v (f n)] {:state v})))
+
+(defn some-tree [f zipper]
+  (:state (visit zipper nil [(some-tree-visitor f)])))
+```
+
+And let's use a different sort of zipper, because we can!
+
+```clojure
+(def my-zip (z/vector-zip [1 2 3 [4 5 [6] 7 [8 9]]]))
+
+user=> (some-tree #(if (and (number? %) (odd? %)) %) my-zip)
+
+9
+```
+
+Whoops! I bet some of you saw that coming. Some is supposed to return the first value that
+matches, but here we got the last value. We could modify ``some-tree-visitor`` to adjust for this,
+but if we really want to match the behaviour of ``some`` we need to stop the walk as soon as we
+find the right value. Enter *break*!
+
+```clojure
+(defn some-tree-visitor [f]
+  (visitor :pre [n s] (if-let [v (f n)] {:state v :break true})))
+
+user=> (some-tree #(if (and (number? %) (odd? %)) %) my-zip)
+
+1
+```
+
+When break is set, the walk stops and immediately zips back up to the root. 
 
 ## License
 
