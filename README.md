@@ -41,7 +41,6 @@ visit our HTML.
 
 ```clojure
 user=> (visit root nil [printer])
-
 :pre {:tag :div, :attrs nil, :content [{:tag :span, :attrs {:id "greeting"}, :content ["Hello"]} {:tag :span, :attrs {:id "name"}, :content ["Mr. Foo"]} "!"]}
 :pre {:tag :span, :attrs {:id "greeting"}, :content ["Hello"]}
 :pre Hello
@@ -73,8 +72,8 @@ with id #name. Consider the following function.
 
 ```clojure
 (defn replace-element [id replacement]
-    (visitor :pre [n s]
-      (if (= (:id (:attrs n)) id) {:node replacement})))
+  (visitor :pre [n s]
+    (if (= (:id (:attrs n)) id) {:node replacement})))
 ```
 
 There is a fair bit going on here, so let's break it down into pieces. On the top
@@ -95,7 +94,6 @@ Let's try it:
 
 ```clojure
 user=> (pprint (:node (visit root nil [(replace-element "name" "Mr. Smith")])))
-
 {:tag :div,
  :attrs nil,
  :content
@@ -113,7 +111,6 @@ from the previous functions.
 
 ```clojure
 user=> (:node (visit root nil [(replace-element "greeting" "Greetings") (replace-element "name" "Mr. Smith")]))
-
 {:tag :div, :attrs nil, :content ["Greetings" "Mr. Smith" "!"]}
 ```
 
@@ -124,9 +121,8 @@ with the zippered data during the walk. As an example, let's collect all the spa
 in our example data.
 
 ```clojure
-(defvisitor collect-spans :pre
-    [n s]
-    (if (= :span (:tag n)) {:state (conj s (:content n))}))
+(defvisitor collect-spans :pre [n s]
+  (if (= :span (:tag n)) {:state (conj s (:content n))}))
 ```
 
 Here we introduce the second visit helper macro, ``defvisitor``. This is the same
@@ -135,7 +131,6 @@ expects state that is just a set.
 
 ```clojure
 user=> (:state (visit root #{} [collect-spans]))
-
 #{["Mr. Foo"] ["Hello"]}
 ```
 
@@ -158,7 +153,6 @@ Just be aware of the order!
 
 ```clojure
 user=> (pprint (visit root #{} [(replace-element "name" "Mr. Smith") collect-spans]))
-
 {:node
  {:tag :div,
   :attrs nil,
@@ -182,7 +176,6 @@ at a given step, it continues walking the replaced content. Consider this exampl
   (if (= "greeting" (:id (:attrs n))) {:node (update-in n [:content] conj s*)}))
 
 user=> (pprint (:node (visit root nil [extended-greeting (replace-element "other-name" "Mrs. Smith")])))
-
 {:tag :div,
  :attrs nil,
  :content
@@ -206,7 +199,6 @@ What if you don't want this behaviour? You can disable it on a per function basi
   (if (= "greeting" (:id (:attrs n))) {:node (update-in n [:content] conj s*) :cut true}))
 
 user=> (pprint (:node (visit root nil [extended-greeting (replace-element "other-name" "Mrs. Smith")])))
-
 {:tag :div,
  :attrs nil,
  :content
@@ -238,7 +230,6 @@ And let's use a different sort of zipper, because we can!
 (def my-zip (z/vector-zip [1 2 3 [4 5 [6] 7 [8 9]]]))
 
 user=> (some-tree #(if (and (number? %) (odd? %)) %) my-zip)
-
 9
 ```
 
@@ -252,11 +243,10 @@ find the right value. Enter *break*!
   (visitor :pre [n s] (if-let [v (f n)] {:state v :break true})))
 
 user=> (some-tree #(if (and (number? %) (odd? %)) %) my-zip)
-
 1
 ```
 
-When break is set, the walk stops and immediately zips back up to the root. 
+When break is set, the walk stops and immediately zips back up to the root.
 
 ## License
 
