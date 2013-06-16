@@ -70,38 +70,3 @@
 (defmacro defvisitor
   [sym type bindings & body]
   `(def ~sym (visitor ~type ~bindings ~@body)))
-
-;; DEMOS!!!
-
-#_(require '[clojure.xml :as xml])
-
-(def s "<div><span id='greeting'>Hello</span> <span id='name'>Mr. Foo</span>!</div>")
-#_(def root (z/xml-zip (xml/parse (java.io.ByteArrayInputStream. (.getBytes s)))))
-
-;; Let's just print the nodes. Here we use a general visitor function for all events.
-#_(defn printer [evt n s] (println evt (str n s)))
-
-#_(visit root nil [printer])
-
-;; Let's catch and replace the greeting spans with text.
-#_(defn replace-element [id replacement]
-  (visitor :pre [n s]
-    (if (= (:id (:attrs n)) id) {:node replacement})))
-
-#_(:node (visit root nil [(replace-element "name" "Mr. Smith")]))
-
-;; We can also just collect stuff using state.
-#_(defvisitor collect-spans :pre
-   [n s]
-   (if (= :span (:tag n)) {:state (conj s (:content n))}))
-
-#_(:state (visit root #{} [collect-spans]))
-
-;; And we can do multiple things. Things are done in order they occur in the visitor seq.
-
-#_(visit root #{}
-    [collect-spans
-     (replace-element "name" "Mr. Smith")
-     (replace-element "greeting" "Grettings")])
-
-#_(defn)
