@@ -1,4 +1,4 @@
-(defproject zip-visit "1.0.0"
+(defproject zip-visit "1.0.1"
   :description "Clojure zipper-based visitor library."
   :url "https://github.com/akhudek/zip-visit"
   :license {:name "MIT"
