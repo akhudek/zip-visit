@@ -253,6 +253,9 @@ user=> (some-tree #(if (and (number? %) (even? %)) %) my-zip)
 
 When break is set the walk stops and immediately zips back up to the root.
 
+## Contributors
+ - rubicks
+
 ## License
 
 The MIT License (MIT)
