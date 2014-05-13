@@ -1,4 +1,4 @@
-(defproject fast-zip-visit "1.0.1"
+(defproject fast-zip-visit "1.0.2"
   :description "Clojure zipper-based visitor library (fast-zip version)."
   :url "https://github.com/akhudek/zip-visit"
   :license {:name "MIT"
