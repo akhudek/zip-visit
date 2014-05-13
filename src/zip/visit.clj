@@ -11,15 +11,17 @@
       (let [{node* :node state* :state b :break c :cut} (v dir node state)]
         (if (or b c)
           {:node node* :state state* :break b :cut c}
-          (recur (or node* node) (or state* state) visitors)))
+          (recur (if (nil? node*) node node*)
+                 (if (nil? state*) state state*)
+                 visitors)))
       {:node node :state state})))
 
 (defn- visit-location
   [dir loc state visitors]
   (let [node (z/node loc)
         context (visit-node dir (z/node loc) state visitors)]
-    {:loc   (if-let [new-node (:node context)] (z/replace loc new-node) loc)
-     :state (or (:state context) state)
+    {:loc   (if (nil? (:node context)) loc (z/replace loc (:node context)))
+     :state (if (nil? (:state context)) state (:state context))
      :break (:break context)
      :cut   (:cut context)}))
 
