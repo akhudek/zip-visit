@@ -1,6 +1,6 @@
 (ns zip.visit
   (:require
-    [clojure.zip :as z]))
+    [fast-zip.core :as z]))
 
 (defn- visit-node
   [dir node state visitors]
