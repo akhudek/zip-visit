@@ -1,4 +1,4 @@
-# zip-visit
+# fast-zip-visit
 
 A Clojure library implementing functional visitors over zippers. This library
 was inspired partly by http://www.ibm.com/developerworks/library/j-treevisit/
@@ -9,19 +9,19 @@ and my own needs for walking and modifying tree data structures in clojure.
 Add the dependency:
 
 ```clojure
-[zip-visit "1.0.0"]
+[fast-zip-visit "1.0.0"]
 ```
 
 Require the library.
 
 ```clojure
-(require '[zip.visit :refer :all])
+(require '[fast-zip.visit :refer :all])
 ```
 
 Visitors operate over zippers, let's require that:
 
 ```clojure
-(require '[clojure.zip :as z])
+(require '[clojure.fast-zip :as z])
 ```
 
 Zippers can operate over any tree or sequence type data. As an example, we
@@ -31,7 +31,7 @@ will walk over XML. Let's load a short HTML example into a zipper:
 (require '[clojure.xml :as xml])
 
 (def s "<div><span id='greeting'>Hello</span> <span id='name'>Mr. Foo</span>!</div>")
-(def root (z/xml-zip (xml/parse (java.io.ByteArrayInputStream. (.getBytes s)))))
+(def root (z/xml-fast-zip (xml/parse (java.io.ByteArrayInputStream. (.getBytes s)))))
 ```
 
 The visit function provides events for pre-order, post-order, and partial in-order
@@ -87,7 +87,7 @@ There is a fair bit going on here, so let's break it down into pieces. On the to
 most level we have defined a function, ``replace-element`` that returns a visitor
 function. The ``replace-element`` function takes an id and replacement string.
 
-Next, we introduce one of zip-visit's helper functions: ``visitor``. This is a
+Next, we introduce one of fast-zip-visit's helper functions: ``visitor``. This is a
 macro that creates a visitor function which fires only on a particular event. As
 in our first example, ``n`` is the tree node and ``s`` is the state. In this
 example our visitor will only fire in a pre-order walk.
@@ -232,9 +232,9 @@ that some takes a function and a collection and returns the first non-nil value 
 And let's use a different sort of zipper, because we can!
 
 ```clojure
-(def my-zip (z/vector-zip [1 2 3 [4 5 [6] 7 [8 9]]]))
+(def my-fast-zip (z/vector-fast-zip [1 2 3 [4 5 [6] 7 [8 9]]]))
 
-user=> (some-tree #(if (and (number? %) (even? %)) %) my-zip)
+user=> (some-tree #(if (and (number? %) (even? %)) %) my-fast-zip)
 8
 ```
 
@@ -247,7 +247,7 @@ find the right value. Enter *break*!
 (defn some-tree-visitor [f]
   (visitor :pre [n s] (if-let [v (f n)] {:state v :break true})))
 
-user=> (some-tree #(if (and (number? %) (even? %)) %) my-zip)
+user=> (some-tree #(if (and (number? %) (even? %)) %) my-fast-zip)
 2
 ```
 

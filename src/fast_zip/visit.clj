@@ -1,4 +1,4 @@
-(ns zip.visit
+(ns fast-zip.visit
   (:require
     [fast-zip.core :as z]))
 

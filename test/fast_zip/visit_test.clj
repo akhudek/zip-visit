@@ -1,8 +1,8 @@
-(ns zip.visit-test
+(ns fast-zip.visit-test
   (:require
    [clojure.test :refer :all]
    [fast-zip.core :as z]
-   [zip.visit :as zv]))
+   [fast-zip.visit :as zv]))
 
 (defn -xor [a b] (and (or a b) (not (and a b))))
 
