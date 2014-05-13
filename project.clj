@@ -5,4 +5,6 @@
             :url "http://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.5.1"]]
   :scm {:name "git"
-        :url  "https://github.com/akhudek/zip-visit"})
+        :url  "https://github.com/akhudek/zip-visit"}
+  :deploy-repositories
+    [["clojars" {:signing {:gpg-key "D8B883CA"}}]])
