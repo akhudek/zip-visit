@@ -9,7 +9,7 @@ and my own needs for walking and modifying tree data structures in clojure.
 Add the dependency:
 
 ```clojure
-[zip-visit "1.0.0"]
+[zip-visit "1.0.2"]
 ```
 
 Require the library.
