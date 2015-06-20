@@ -63,12 +63,14 @@
               (recur loc* :right state)
               {:node (z/node loc) :state state})))))))
 
-(defmacro visitor
-  [type bindings & body]
-  `(fn [d# n# s#]
-     (when (= ~type d#)
-       (loop [n*# n# s*# s#] (let [~bindings [n*# s*#]] ~@body)))))
+#?(:clj
+   (defmacro visitor
+     [type bindings & body]
+     `(fn [d# n# s#]
+        (when (= ~type d#)
+          (loop [n*# n# s*# s#] (let [~bindings [n*# s*#]] ~@body))))))
 
-(defmacro defvisitor
-  [sym type bindings & body]
-  `(def ~sym (visitor ~type ~bindings ~@body)))
+#?(:clj
+   (defmacro defvisitor
+     [sym type bindings & body]
+     `(def ~sym (visitor ~type ~bindings ~@body))))

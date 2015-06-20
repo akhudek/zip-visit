@@ -1,8 +1,12 @@
 (ns zip.visit-test
   (:require
-   [clojure.test :refer :all]
    [clojure.zip :as z]
-   [zip.visit :as zv]))
+   #?@(:clj
+       [[clojure.test :refer :all]
+        [zip.visit :as zv]])
+   #?@(:cljs
+       [[cljs.test :refer-macros [deftest testing is]]
+        [zip.visit :as zv :include-macros true]])))
 
 (defn -xor [a b] (and (or a b) (not (and a b))))
 
