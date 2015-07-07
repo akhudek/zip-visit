@@ -9,7 +9,7 @@ and my own needs for walking and modifying tree data structures in clojure.
 Add the dependency:
 
 ```clojure
-[zip-visit "1.0.2"]
+[zip-visit "1.1.0"]
 ```
 
 Require the library.
@@ -255,11 +255,12 @@ When break is set the walk stops and immediately zips back up to the root.
 
 ## Contributors
  - rubicks
+ - Dave Della Costa
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Alexander K. Hudek
+Copyright (c) 2013-2015 Alexander K. Hudek
 
 See LICENSE file.
