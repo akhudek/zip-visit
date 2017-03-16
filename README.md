@@ -1,6 +1,6 @@
 # zip-visit
 
-A Clojure library implementing functional visitors over zippers. This library
+A Clojure(Script) library implementing functional visitors over zippers. This library
 was inspired partly by http://www.ibm.com/developerworks/library/j-treevisit/
 and my own needs for walking and modifying tree data structures in clojure.
 
@@ -16,6 +16,13 @@ Require the library.
 
 ```clojure
 (require '[zip.visit :refer :all])
+```
+
+(When requiring in ClojureScript, make sure you add `:refer-macros`:)
+
+```clojure
+(ns my-awesome-ns
+  (:require [zip.visit :as v :refer-macros [visitor defvisitor]]))
 ```
 
 Visitors operate over zippers, let's require that:
