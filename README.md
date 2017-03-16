@@ -268,6 +268,6 @@ When break is set the walk stops and immediately zips back up to the root.
 
 The MIT License (MIT)
 
-Copyright (c) 2013-2015 Alexander K. Hudek
+Copyright (c) 2013-2017 Alexander K. Hudek
 
 See LICENSE file.
