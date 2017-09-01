@@ -48,7 +48,7 @@ traversal. To illustrate this, let's create an event printer from scratch.
 (defn printer [evt n s] (println evt (str n s)))
 ```
 
-Vistors are just functions that take three arguments. The first is the event, either
+Visitors are just functions that take three arguments. The first is the event, either
 ``:pre``, ``:post``, or ``:in``. The second is the current node and the third is
 the current state. We will explain the state in detail later. For now, let's
 visit our HTML.
