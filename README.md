@@ -1,8 +1,9 @@
 # zip-visit
 
 A Clojure(Script) library implementing functional visitors over zippers. This library
-was inspired partly by http://www.ibm.com/developerworks/library/j-treevisit/
-and my own needs for walking and modifying tree data structures in clojure.
+was inspired partly by http://www.ibm.com/developerworks/library/j-treevisit/ (dead link,
+alternative: https://insideclojure.org/images/j-treevisit-pdf.pdf) and my own needs 
+for walking and modifying tree data structures in clojure.
 
 ## Usage
 
